@@ -39,7 +39,7 @@ const Navigation = () => {
           {user && (
             <li className="nav-item">
               <Link className="nav-link" to="/profile">
-                Profile
+                {user.email.split("@")[0]}
               </Link>
             </li>
           )}

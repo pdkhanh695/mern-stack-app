@@ -5,6 +5,7 @@ import { gql } from "apollo-boost";
 import Navigation from "./components/navigation";
 import Register from "./pages/auth/Register";
 import PasswordUpdate from "./pages/auth/PasswordUpdate";
+import PasswordForgot from "./pages/auth/PasswordForgot";
 import Profile from "./pages/auth/Profile";
 import CompleteRegistration from "./pages/auth/CompleteRegistration";
 import Login from "./pages/auth/Login";
@@ -45,6 +46,7 @@ const App = () => {
         <Route exact path="/" component={Home} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/password/forgot" component={PasswordForgot} />
         <Route
           exact
           path="/complete-registration"
@@ -61,4 +63,5 @@ const App = () => {
     </ApolloProvider>
   );
 };
+
 export default App;

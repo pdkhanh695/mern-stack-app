@@ -4,6 +4,18 @@ import { auth } from "../../firebase";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
+import { useMutation } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
+import AuthForm from "../../components/forms/AuthForm";
+
+const USER_CREATE = gql`
+  mutation userCreate {
+    userCreate {
+      username
+      email
+    }
+  }
+`; // parse USER_CREATE as an argument
 
 const CompeleteRegistration = () => {
   const { dispatch } = useContext(AuthContext); // useContext
@@ -12,9 +24,13 @@ const CompeleteRegistration = () => {
   const [loading, setLoading] = useState(false);
 
   let history = useHistory();
+
   useEffect(() => {
     setEmail(window.localStorage.getItem("emailForRegistration"));
   }, [history]); // this function will run when: didmount & the value of history change
+
+  const [userCreate] = useMutation(USER_CREATE);
+
   const handleSubmit = async (e) => {
     //
     e.preventDefault();
@@ -47,8 +63,9 @@ const CompeleteRegistration = () => {
         });
 
         // make api request to save/update user in mongoDB
+        userCreate();
 
-        history.push("/");
+        history.push("/profile");
       }
       //console.log("Email:", email);
       //console.log("Link:", window.location.href);
@@ -67,36 +84,15 @@ const CompeleteRegistration = () => {
       ) : (
         <h4>Complete your registration</h4>
       )}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label> Email Address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="form-control"
-            placeholder="Enter email"
-            disabled
-          />
-        </div>
-        <div className="form-group">
-          <label> Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="form-control"
-            placeholder="Enter password"
-            disabled={loading}
-          />
-        </div>
-        <button
-          className="btn btn-raised btn-primary"
-          disabled={!email || loading}
-        >
-          Submit
-        </button>
-      </form>
+      <AuthForm
+        email={email}
+        loading={loading}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        handleSubmit={handleSubmit}
+        showPasswordInput="true"
+      />
     </div>
   );
 };

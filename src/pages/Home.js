@@ -38,18 +38,19 @@ const Home = () => {
   return (
     <div className="container">
       <div className="row p-5">
-        {data.allPosts.map((p) => (
-          <div className="col-md-4" key={p.id}>
-            <div className="card">
-              <div className="card-body">
-                <div className="card-title">
-                  <h4> {p.title}</h4>
+        {data &&
+          data.allPosts.map((p) => (
+            <div className="col-md-4" key={p.id}>
+              <div className="card">
+                <div className="card-body">
+                  <div className="card-title">
+                    <h4> {p.title}</h4>
+                  </div>
+                  <p className="card-text">{p.description}</p>
                 </div>
-                <p className="card-text">{p.description}</p>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       <div className="row p-5">
         <button

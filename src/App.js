@@ -15,11 +15,12 @@ import { ToastContainer } from "react-toastify";
 import { AuthContext } from "./context/authContext";
 
 import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
 
 import Post from "./pages/post/Post";
-
-// import components
 import Home from "./pages/Home";
+import Users from "./pages/Users";
+import SigleUser from "./pages/SingleUser";
 
 const App = () => {
   const { state } = useContext(AuthContext);
@@ -44,8 +45,9 @@ const App = () => {
       <ToastContainer />
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/register" component={Register} />
-        <Route exact path="/login" component={Login} />
+        <Route exact path="/users" component={Users} />
+        <PublicRoute exact path="/register" component={Register} />
+        <PublicRoute exact path="/login" component={Login} />
         <Route exact path="/password/forgot" component={PasswordForgot} />
         <Route
           exact
@@ -59,6 +61,7 @@ const App = () => {
         />
         <PrivateRoute exact path="/profile" component={Profile} />
         <PrivateRoute exact path="/post/create" component={Post} />
+        <Route exact path="/user/:username" component={SigleUser} />
       </Switch>
     </ApolloProvider>
   );

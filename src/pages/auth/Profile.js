@@ -15,6 +15,8 @@ import { PROFILE } from "../../graphql/queries";
 import Resizer from "react-image-file-resizer";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
+import UserProfile from "../../components/forms/UserProlife";
+import FileUpload from "../../components/forms/FileUpload";
 
 const Profile = () => {
   const { state } = useContext(AuthContext);
@@ -67,175 +69,29 @@ const Profile = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const fileResizeAnUpload = (event) => {
-    // upload the image, get the Url back =>
-    // First: Resize the image => install backage to resize the image
-    // Search: npm i react-image-file-resizer
-    let fileInput = false;
-    if (event.target.files[0]) {
-      fileInput = true;
-    }
-    if (fileInput) {
-      Resizer.imageFileResizer(
-        event.target.files[0],
-        300,
-        300,
-        "JPEG",
-        100,
-        0,
-        (uri) => {
-          //console.log(uri);
-
-          axios
-            .post(
-              `${process.env.REACT_APP_REST_ENDPOINT}/uploadimages`,
-              { image: uri },
-              {
-                headers: {
-                  authtoken: state.user.token,
-                },
-              }
-            )
-            .then((response) => {
-              // after send the image => we revice the Url
-              setLoading(false);
-              console.log("CLOUDINARY UPLOAD", response);
-              setValues({ ...values, images: [...images, response.data] }); // images: [url, public_id]
-            })
-            .catch((error) => {
-              setLoading(false);
-              console.log("CLOUDINARY UPLOAD FAILED", error);
-            });
-        },
-        "base64"
-      );
-    }
-  };
-
-  const handleImageRemove = (id) => {
-    setLoading(true);
-    axios
-      .post(
-        `
-        ${process.env.REACT_APP_REST_ENDPOINT}/removeimage
-        `,
-        {
-          public_id: id,
-        },
-        {
-          headers: {
-            authtoken: state.user.token,
-          },
-        }
-      )
-      .then((response) => {
-        setLoading(false);
-        let filterImages = images.filter((item) => {
-          return item.public_id !== id; // when success function callback will delete image from imagesvalue
-        });
-        setValues({ ...values, images: filterImages });
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
-  };
-  const profileUpdateForm = () => (
-    <form onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label> UserName </label>
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={handleChange}
-          className="form-control"
-          placeholder="UserName"
-          disabled={loading}
-        />
-      </div>
-
-      <div className="form-group">
-        <label> Name </label>
-        <input
-          type="text"
-          name="name"
-          value={name}
-          onChange={handleChange}
-          className="form-control"
-          placeholder="Name"
-          disabled={loading}
-        />
-      </div>
-
-      <div className="form-group">
-        <label> Email </label>
-        <input
-          type="email"
-          name="email"
-          value={email}
-          onChange={handleChange}
-          className="form-control"
-          placeholder="Email"
-          disabled
-        />
-      </div>
-
-      <div className="form-group">
-        <label> About </label>
-        <textarea
-          name="about"
-          value={about}
-          onChange={handleChange}
-          className="form-control"
-          placeholder="About"
-          disabled={loading}
-        />
-      </div>
-      <button
-        className="btn btn-primary"
-        type="submit"
-        disabled={!email || loading}
-      >
-        {" "}
-        Submit{" "}
-      </button>
-    </form>
-  );
-
   return (
     <div className="container p-5">
       <div className="row">
-        <div className="col-md-3">
-          <div className="form-group">
-            <label className="btn btn-outline-success">
-              {" "}
-              Upload Image
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                onChange={fileResizeAnUpload}
-                className="form-control"
-                placeholder="Image"
-              />
-            </label>
-          </div>
+        <div className="col-md-12 text-center pb-3 ">
+          {loading ? (
+            <h4 className="text-danger">Loading...</h4>
+          ) : (
+            <h4>Profile</h4>
+          )}
         </div>
-        <div className="col-md-9">
-          {images.map((image) => (
-            <img
-              src={image.url}
-              key={image.public_id}
-              alt={image.public_id}
-              style={{ height: "100px" }}
-              className="float-right"
-              onClick={() => handleImageRemove(image.public_id)}
-            />
-          ))}
-        </div>
+        <FileUpload
+          setValues={setValues}
+          setLoading={setLoading}
+          values={values}
+          loading={loading}
+        />
       </div>
-      {profileUpdateForm()}
+      <UserProfile
+        {...values}
+        handleSubmit={handleSubmit}
+        handleChange={handleChange}
+        loading={loading}
+      />
     </div>
   );
 };

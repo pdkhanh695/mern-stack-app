@@ -36,6 +36,11 @@ const Navigation = () => {
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
+          <li className="nav-item active">
+            <Link className="nav-link" to="/users">
+              Users
+            </Link>
+          </li>
           {user && (
             <li className="nav-item">
               <Link className="nav-link" to="/profile">
@@ -45,7 +50,7 @@ const Navigation = () => {
           )}
           {!user && (
             <Fragment>
-              <li className="nav-item">
+              <li className="nav-item active">
                 <Link className="nav-link" to="/login">
                   Login
                 </Link>

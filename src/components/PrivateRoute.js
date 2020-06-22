@@ -46,8 +46,8 @@ const PrivateRoute = ({ ...rest }) => {
   const renderContent = () => (
     <div className="container-fluid pt-5">
       <div className="row">
-        <div className="col-md-4">{navLinks()}</div>
-        <div className="col-md-8">
+        <div className="col-md-3">{navLinks()}</div>
+        <div className="col-md-9">
           <Route {...rest} />
         </div>
       </div>

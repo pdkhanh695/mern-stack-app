@@ -4,7 +4,13 @@ import axios from "axios";
 import { AuthContext } from "../../context/authContext";
 import Image from "./Image";
 
-const FileUpload = ({ setValues, setLoading, values, loading }) => {
+const FileUpload = ({
+  setValues,
+  setLoading,
+  values,
+  loading,
+  singleUpload = false,
+}) => {
   const { state } = useContext(AuthContext);
   const fileResizeAnUpload = (event) => {
     // upload the image, get the Url back =>
@@ -40,8 +46,16 @@ const FileUpload = ({ setValues, setLoading, values, loading }) => {
               // after send the image => we revice the Url
               setLoading(false);
               console.log("CLOUDINARY UPLOAD", response);
-              const { images } = values;
-              setValues({ ...values, images: [...images, response.data] }); // images: [url, public_id]
+              //setValues to parent component based on either it is used for single or multiple upload
+
+              if (singleUpload) {
+                //single upload
+                const { image } = values;
+                setValues({ ...values, image: response.data }); // images: [url, public_id]
+              } else {
+                const { images } = values;
+                setValues({ ...values, images: [...images, response.data] }); // images: [url, public_id]
+              }
             })
             .catch((error) => {
               setLoading(false);
@@ -71,11 +85,23 @@ const FileUpload = ({ setValues, setLoading, values, loading }) => {
       )
       .then((response) => {
         setLoading(false);
-        const { images } = values;
-        let filterImages = images.filter((item) => {
-          return item.public_id !== id; // when success function callback will delete image from imagesvalue
-        });
-        setValues({ ...values, images: filterImages });
+        //setValues to parent component based on either it is used for single or multiple upload
+        if (singleUpload) {
+          const { image } = values;
+          setValues({
+            ...values,
+            image: {
+              url: "",
+              public_id: "",
+            },
+          });
+        } else {
+          const { images } = values;
+          let filterImages = images.filter((item) => {
+            return item.public_id !== id; // when success function callback will delete image from imagesvalue
+          });
+          setValues({ ...values, images: filterImages });
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -101,13 +127,23 @@ const FileUpload = ({ setValues, setLoading, values, loading }) => {
         </div>
       </div>
       <div className="col-md-9">
-        {values.images.map((image) => (
+        {/* for single images */}
+        {values.image && (
           <Image
-            image={image}
-            key={image.public_id}
+            image={values.image}
+            key={values.image.public_id}
             handleImageRemove={handleImageRemove}
           />
-        ))}
+        )}
+        {/* for multiple images */}
+        {values.images &&
+          values.images.map((image) => (
+            <Image
+              image={image}
+              key={image.public_id}
+              handleImageRemove={handleImageRemove}
+            />
+          ))}
       </div>
     </div>
   );
